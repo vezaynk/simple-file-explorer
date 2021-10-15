@@ -1,0 +1,34 @@
+{
+  "name": "simple-file-explorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --open",
+    "server": "tsc && node build/server/index.js",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^17.0.30",
+    "@types/react-dom": "^17.0.9",
+    "@types/ws": "^8.2.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "css-loader": "^6.4.0",
+    "eslint": "^7.0.0",
+    "eslint-plugin-react": "^7.26.1",
+    "html-webpack-plugin": "^5.3.2",
+    "mini-css-extract-plugin": "^2.4.2",
+    "source-map-loader": "^3.0.0",
+    "typescript": "^3.9.10",
+    "webpack": "^5.58.2",
+    "webpack-cli": "^4.9.0",
+    "webpack-dev-server": "^4.3.1"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "ws": "^8.2.3"
+  }
+}
