@@ -21,6 +21,8 @@ You can deploy it yourself, and use the `heroku ps:exec -a app_name` command to 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+The Heroku deployment creates a `~/tmp/folders/` directory full of folders and files. It can be recreated by running `./scripts/generate-folders.sh`.
+
 # Architecture
 
 ## Packages Used:
@@ -37,7 +39,7 @@ State between the two is synchronized by sending messages over WebSockets using 
 
 ## Communication Protocol
 
-The communications between client and server are limited to 2 commands, sent over WebSockets.
+The communications between client and server are limited to 2 types of commands `FileEvent` and `FolderEvent`, sent over WebSockets.
 
 ### Server to client
 
@@ -68,7 +70,7 @@ Upon first connecting, the first communication from the server is to send the cl
 When opening or closer a directory, the client informs the server that it wishes to subscribe or unsubscribe from it:
 
 ```ts
-{
+FolderEvent {
   type: "open" | "close";
   pathname: string;
 }
