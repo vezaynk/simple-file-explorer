@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev:client": "webpack-dev-server --open",
-    "open": "OPEN=1 npm run build && npm start",
+    "open": "OPEN=1 npm run build && npm start ${DIRECTORIES}",
+    "heroku-postbuild": "npm run build && ./scripts/generate-folders.sh",
     "server": "tsc && node build/server/index.js",
     "build": "webpack && tsc",
     "start": "node build/server/index.js"
