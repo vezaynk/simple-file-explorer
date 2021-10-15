@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev:client": "webpack-dev-server --open",
-    "open": "OPEN=1 npm run build && npm start ${DIRECTORIES}",
+    "open": "OPEN=1 npm run build && npm start",
     "heroku-postbuild": "npm run build && ./scripts/generate-folders.sh",
     "server": "tsc && node build/server/index.js",
     "build": "webpack && tsc",
-    "start": "node build/server/index.js"
+    "start": "node build/server/index.js ${DIRECTORIES}"
   },
   "author": "Slava Knyazev",
   "license": "ISC",
