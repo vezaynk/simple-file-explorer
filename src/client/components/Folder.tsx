@@ -14,15 +14,9 @@ const Folder = ({ path, name }: FolderProps) => {
     const files = explorerContext.getChildren(path);
     const [showChildren, setShowChildren] = useState(false);
     useEffect(() => {
-        return () => explorerContext.close(path);
+        return () => { if (showChildren) explorerContext.close(path); };
     }, []);
-    useEffect(() => {
-        if (showChildren) {
-            explorerContext.open(path);
-        } else {
-            explorerContext.close(path);
-        }
-    }, [showChildren]);
+
     let fileListing = <span>Loading...</span>;
     if (files != null) {
         fileListing = <ul>
@@ -41,7 +35,14 @@ const Folder = ({ path, name }: FolderProps) => {
         }
     }
     return <li>
-        <strong onClick={() => setShowChildren(!showChildren)}>{name}</strong>
+        <strong onClick={() => {
+            setShowChildren(!showChildren);
+            if (showChildren) {
+                explorerContext.close(path);
+            } else {
+                explorerContext.open(path);
+            }
+        }}>{name}</strong>
         {showChildren && fileListing}
     </li>;
 };

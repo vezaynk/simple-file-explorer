@@ -8,7 +8,7 @@ const ExplorerContext = createContext({ getChildren: (path: string[]): null | Fi
 const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [tree, setTree] = useState<TreeNode>({});
-    const [opened, setOpened] = useState(new Set());
+    const [opened, setOpened] = useState(new Map<string, number>());
     const [roots, setRoots] = useState<string[]>([]);
 
     useEffect(() => {
@@ -42,7 +42,8 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 setRoots([...roots, pathname]);
                 break;
             case "folder":
-                pointer[path.shift()] = {};
+                let name = path.shift();
+                pointer[name] = pointer[name] || {};
                 break;
             case "unlink":
                 close(path);
@@ -76,29 +77,36 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 name,
                 isFolder: value !== "FILE"
             };
-        });
+        }).sort();
     };
     const close = (path: string[]) => {
         const pathname = "/" + path.join("/");
         if (!opened.has(pathname)) {
             return;
         }
+        const watchers = opened.get(pathname);
+        opened.set(pathname, watchers - 1);
+
+        if (watchers > 1) return;
         ws.send(JSON.stringify({
             type: "close",
             pathname: pathname
         }));
         opened.delete(pathname);
-        setOpened(new Set(opened));
+        setOpened(new Map(opened));
     };
     const open = (path: string[]) => {
         const pathname = "/" + path.join("/");
-        if (opened.has(pathname)) return;
-        opened.add(pathname);
-        setOpened(new Set(opened));
-        ws.send(JSON.stringify({
-            type: "open",
-            pathname: pathname
-        }));
+        const watchers = opened.get(pathname) || 0;
+        opened.set(pathname, watchers + 1);
+        setOpened(new Map(opened));
+
+        // Subscribe, but only if first watcher
+        if (watchers == 0)
+            ws.send(JSON.stringify({
+                type: "open",
+                pathname: pathname
+            }));
     };
 
     return (<ExplorerContext.Provider value={{ getChildren, open, close, roots }}>

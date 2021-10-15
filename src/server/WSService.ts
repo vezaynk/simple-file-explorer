@@ -13,15 +13,17 @@ export function registerWebSocketServer(server: http.Server, roots: string[]) {
   const fileWatcher = new FileWatcher();
 
   wss.on("connection", (ws) => {
-    console.log("Connected");
     const subscriptions = new Map<string, () => void>();
 
-    ws.send(
-      JSON.stringify({
-        eventType: "root",
-        pathname: "/home/slava/testdir",
-      })
-    );
+    for (let root of roots) {
+      ws.send(
+        JSON.stringify({
+          eventType: "root",
+          pathname: root,
+        })
+      );
+    }
+
     ws.on("close", () => {
       for (let [pathname, unsub] of subscriptions) {
         unsub();
