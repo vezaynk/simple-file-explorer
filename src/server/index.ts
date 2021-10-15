@@ -5,7 +5,7 @@ const wss = new WebSocketServer({ port: 9999 });
 
 const fileWatcher = new FileWatcher();
 
-interface Message {
+interface FolderOperation {
   type: "open" | "close";
   pathname: string;
 }
@@ -20,7 +20,7 @@ wss.on("connection", (ws) => {
     }
   });
   ws.on("message", async (message: string) => {
-    const { type, pathname } = JSON.parse(message) as Message;
+    const { type, pathname } = JSON.parse(message) as FolderOperation;
     switch (type) {
       case "open":
         if (!subscriptions.get(pathname)) {

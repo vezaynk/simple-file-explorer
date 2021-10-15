@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import type { FileEvent, EventType } from "../types/FileEvent";
+import type { FileEvent } from "../shared/types/FileEvent";
+import type { EventType } from "../shared/types/EventType";
 
 async function getFileType(file: string): Promise<EventType> {
   return fs.promises
@@ -21,7 +22,6 @@ export default class FileWatcher {
     const subscribers = this.subscriptions.get(pathname);
     if (!subscribers) return;
 
-    console.log("Publishing", event, "to", subscribers.size, "clients");
     for (let callback of subscribers) {
       callback(event);
     }
@@ -71,6 +71,16 @@ export default class FileWatcher {
         pathname,
       });
     }
+
+    // Informing the front-end that a folder is empty is difficult
+    // Sending a message merely to acknowledge that a folder is empty
+    // is another convenient hack
+    if (!files.length)
+      this.publish(pathname, {
+        eventType: "empty",
+        filename: "",
+        pathname,
+      });
   }
   unwatch(pathname: string) {
     const watcher = this.watchers.get(pathname);
