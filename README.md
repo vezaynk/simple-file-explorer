@@ -2,6 +2,8 @@
 
 This is a basic file explorer built with NodeJS and React.
 
+![Demo GIF](demo.gif)
+
 # Running
 
 ## Local Demo
