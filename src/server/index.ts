@@ -1,45 +1,17 @@
-import FileWatcher from "./FileWatcher";
-import { WebSocketServer } from "ws";
+import Koa from "koa";
+import http from "http";
+import { registerWebSocketServer } from "./WSService";
+import serve from "koa-static";
+import path from "path";
 
-const wss = new WebSocketServer({ port: 9999 });
+const app = new Koa();
 
-const fileWatcher = new FileWatcher();
+const server = http.createServer(app.callback());
 
-interface FolderOperation {
-  type: "open" | "close";
-  pathname: string;
-}
+registerWebSocketServer(server);
+app.use(serve(path.join(__dirname, "..", "public")));
 
-wss.on("connection", (ws) => {
-  console.log("Connected");
-  const subscriptions = new Map<string, () => void>();
-  ws.on("close", () => {
-    for (let [pathname, unsub] of subscriptions) {
-      unsub();
-      subscriptions.delete(pathname);
-    }
-  });
-  ws.on("message", async (message: string) => {
-    const { type, pathname } = JSON.parse(message) as FolderOperation;
-    switch (type) {
-      case "open":
-        if (!subscriptions.get(pathname)) {
-          subscriptions.set(
-            pathname,
-            fileWatcher.subscribe(pathname, (fileEvent) =>
-              ws.send(JSON.stringify(fileEvent))
-            )
-          );
-        }
-        break;
-      case "close":
-        const unsub = subscriptions.get(pathname);
-        if (!unsub) return;
-        subscriptions.delete(pathname);
-        unsub();
-        break;
-    }
-  });
+server.listen(8080, function listening() {
+  // @ts-ignore
+  console.log("Listening on", server.address().port);
 });
-
-console.log("Ready!");

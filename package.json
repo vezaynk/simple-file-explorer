@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --open",
+    "dev": "webpack-dev-server --open",
     "server": "tsc && node build/server/index.js",
-    "build": "webpack"
+    "build": "webpack && tsc",
+    "start": "npm run build && node build/server/index.js"
   },
-  "author": "",
+  "author": "Slava Knyazev",
   "license": "ISC",
   "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa-static": "^4.0.2",
     "@types/react": "^17.0.30",
     "@types/react-dom": "^17.0.9",
     "@types/ws": "^8.2.0",
@@ -27,6 +30,8 @@
     "webpack-dev-server": "^4.3.1"
   },
   "dependencies": {
+    "koa": "^2.13.3",
+    "koa-static": "^5.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "ws": "^8.2.3"

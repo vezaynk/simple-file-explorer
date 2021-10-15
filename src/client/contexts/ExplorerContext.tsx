@@ -10,7 +10,7 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const [tree, setTree] = useState<TreeNode>({});
     const [opened, setOpened] = useState(new Set());
     useEffect(() => {
-        const ws = new WebSocket('ws://localhost:9999');
+        const ws = new WebSocket('ws://' + location.host);
         ws.onopen = () => setWs(ws);
         ws.onclose = () => setWs(null);
         return () => ws.close();
