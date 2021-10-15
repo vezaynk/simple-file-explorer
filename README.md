@@ -2,6 +2,25 @@
 
 This is a basic file explorer built with NodeJS and React.
 
+# Running
+
+## Local Demo
+
+```
+git clone https://github.com/knyzorg/simple-file-explorer # Clone repository
+cd simple-file-explorer
+npm i # Install dependencies
+npm run open ~/Desktop/ ./an/index-dir/ # Open folders
+```
+
+## Heroku Demo
+
+A demo is available on [Heroku](https://simple-file-explorer.herokuapp.com/) but doesn't feature real-time change detection, as there are no changes.
+
+You can deploy it yourself, and use the `heroku ps:exec -a app_name` command to access the directories.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 # Architecture
 
 ## Packages Used:

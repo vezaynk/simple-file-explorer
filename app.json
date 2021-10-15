@@ -1,0 +1,19 @@
+{
+    "name": "Simple File Explorer",
+    "description": "This app does one little thing, and does it well.",
+    "keywords": [
+        "react",
+        "node",
+        "file explorer"
+    ],
+    "website": "https://github.com/knyzorg/simple-file-explorer",
+    "repository": "https://github.com/knyzorg/simple-file-explorer",
+    "success_url": "/",
+    "env": {
+        "DIRECTORIES": {
+            "description": "The directory roots to show",
+            "value": "tmp/folders/root1 tmp/folders/root2 tmp/folders/root3 tmp/folders"
+        }
+    },
+    "image": "heroku/nodejs"
+}

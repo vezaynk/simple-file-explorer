@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rm -rf tmp/folders/
-mkdir -p tmp/folders/{root1/deeply/nested/folder/structure,root2/{folder1,folder2,folder3},root3}
+mkdir -p tmp/folders/{root1/deeply/nested/folder/structure,root2/{folder1,folder2,folder3},root3/empty}
 
 touch tmp/folders/root1/deeply/nested/folder/structure/the_end.docx
 touch tmp/folders/root2/diary.txt
