@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --open",
+    "dev:client": "webpack-dev-server --open",
+    "open": "OPEN=1 npm run build && npm start",
     "server": "tsc && node build/server/index.js",
     "build": "webpack && tsc",
-    "start": "npm run build && node build/server/index.js"
+    "start": "node build/server/index.js"
   },
   "author": "Slava Knyazev",
   "license": "ISC",
@@ -32,6 +33,7 @@
   "dependencies": {
     "koa": "^2.13.3",
     "koa-static": "^5.0.0",
+    "open": "^8.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "ws": "^8.2.3"
