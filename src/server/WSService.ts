@@ -1,6 +1,8 @@
 import FileWatcher, { getFileType } from "./FileWatcher";
 import { WebSocketServer } from "ws";
 import http from "http";
+import fs from "fs";
+import path from "path";
 
 interface FolderOperation {
   type: "open" | "close";
@@ -15,14 +17,16 @@ export function registerWebSocketServer(server: http.Server, roots: string[]) {
   wss.on("connection", (ws) => {
     const subscriptions = new Map<string, () => void>();
 
-    for (let root of roots) {
-      ws.send(
-        JSON.stringify({
+    console.log("Sending root folders", roots);
+
+    ws.send(
+      JSON.stringify(
+        roots.map((root) => ({
           eventType: "root",
           pathname: root,
-        })
-      );
-    }
+        }))
+      )
+    );
 
     ws.on("close", () => {
       for (let [pathname, unsub] of subscriptions) {
@@ -42,6 +46,35 @@ export function registerWebSocketServer(server: http.Server, roots: string[]) {
                 ws.send(JSON.stringify(fileEvent))
               )
             );
+
+            // Send full listing when subscribing
+            // Batching for better performance
+            const files = await fs.promises.readdir(pathname);
+            const batch = await Promise.all(
+              files.map(async (filename) => {
+                return {
+                  eventType: await getFileType(path.join(pathname, filename)),
+                  filename,
+                  pathname,
+                };
+              })
+            );
+
+            ws.send(JSON.stringify(batch));
+
+            // Informing the front-end that a folder is empty
+            if (!files.length) {
+              console.log(pathname, "is empty");
+              ws.send(
+                JSON.stringify({
+                  eventType: "empty",
+                  filename: "",
+                  pathname,
+                })
+              );
+            } else {
+              console.log(pathname, "has", files.length, "files");
+            }
           }
           break;
         case "close":

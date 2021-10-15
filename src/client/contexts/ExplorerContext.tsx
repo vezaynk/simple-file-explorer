@@ -19,8 +19,8 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }, []);
 
     if (!ws || ws.readyState !== WebSocket.OPEN) return <h2>No Connection</h2>;
-    ws.onmessage = (message) => {
-        const { eventType, filename, pathname } = JSON.parse(message.data) as FileEvent;
+    function handleFileEvent(fileEvent: FileEvent) {
+        const { eventType, filename, pathname } = fileEvent;
         const path = [...pathname.split("/").filter(p => p), filename];
         let pointer = tree;
         while (path.length > 1) {
@@ -39,7 +39,8 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 pointer[path.shift()] = "FILE";
                 break;
             case "root":
-                setRoots([...roots, pathname]);
+                roots.push(pathname);
+                setRoots([...roots]);
                 break;
             case "folder":
                 let name = path.shift();
@@ -55,6 +56,16 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
 
         setTree({ ...tree });
+    }
+    ws.onmessage = (messageJson) => {
+        const message = JSON.parse(messageJson.data) as FileEvent | FileEvent[];
+        if (Array.isArray(message)) {
+            for (let m of message) {
+                handleFileEvent(m);
+            }
+        } else {
+            handleFileEvent(message);
+        }
     };
 
 
@@ -77,7 +88,7 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 name,
                 isFolder: value !== "FILE"
             };
-        }).sort();
+        }).sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLowerCase()));
     };
     const close = (path: string[]) => {
         const pathname = "/" + path.join("/");

@@ -22,6 +22,6 @@ for (let root of roots) {
 registerWebSocketServer(server, roots);
 app.use(serve(path.join(__dirname, "..", "public")));
 
-server.listen(8080, function listening() {
+server.listen(process.env.PORT, function listening() {
   console.log("Listening on", (server.address() as AddressInfo).port);
 });

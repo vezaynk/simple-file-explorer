@@ -22,6 +22,10 @@ export default class FileWatcher {
     const subscribers = this.subscriptions.get(pathname);
     if (!subscribers) return;
 
+    console.log(
+      `Publishing ${pathname} change to ${subscribers.size} subscribers`,
+      event
+    );
     for (let callback of subscribers) {
       callback(event);
     }
@@ -35,8 +39,11 @@ export default class FileWatcher {
       this.subscriptions.set(pathname, subscribers);
     }
     subscribers.add(callback);
+
+    console.log(`Subscribed to ${pathname} (${subscribers.size})`);
     return () => {
       subscribers.delete(callback);
+      console.log(`Unsubscribing from ${pathname} (${subscribers.size})`);
       if (subscribers.size === 0) {
         this.subscriptions.delete(pathname);
         this.unwatch(pathname);
@@ -59,32 +66,14 @@ export default class FileWatcher {
       this.publish(pathname, { eventType: realEvent, filename, pathname });
     });
 
+    console.log(`Watching ${pathname}`);
     this.watchers.set(pathname, watcher);
-
-    // Send full listing when subscribing
-    // This isn't a very good way of doing it, but it's awfully convenient
-    const files = await fs.promises.readdir(pathname);
-    for (let filename of files) {
-      this.publish(pathname, {
-        eventType: await getFileType(path.join(pathname, filename)),
-        filename,
-        pathname,
-      });
-    }
-
-    // Informing the front-end that a folder is empty is difficult
-    // Sending a message merely to acknowledge that a folder is empty
-    // is another convenient hack
-    if (!files.length)
-      this.publish(pathname, {
-        eventType: "empty",
-        filename: "",
-        pathname,
-      });
   }
   unwatch(pathname: string) {
     const watcher = this.watchers.get(pathname);
     if (!watcher) return;
+
+    console.log(`Unwatching ${pathname}`);
     watcher.close();
     this.watchers.delete(pathname);
   }
