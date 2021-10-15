@@ -12,7 +12,7 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const [roots, setRoots] = useState<string[]>([]);
 
     useEffect(() => {
-        const ws = new WebSocket('ws://' + location.host);
+        const ws = new WebSocket(location.protocol.replace("http", "ws") + '://' + location.host);
         ws.onopen = () => setWs(ws);
         ws.onclose = () => setWs(null);
         return () => ws.close();
