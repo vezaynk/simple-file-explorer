@@ -1,1 +1,1 @@
-export type EventType = "unlink" | "file" | "folder" | "empty";
+export type EventType = "unlink" | "file" | "folder" | "empty" | "root";

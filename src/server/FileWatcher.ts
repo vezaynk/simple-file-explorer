@@ -3,7 +3,7 @@ import path from "path";
 import type { FileEvent } from "../shared/types/FileEvent";
 import type { EventType } from "../shared/types/EventType";
 
-async function getFileType(file: string): Promise<EventType> {
+export async function getFileType(file: string): Promise<EventType> {
   return fs.promises
     .stat(file)
     .then((file) => {

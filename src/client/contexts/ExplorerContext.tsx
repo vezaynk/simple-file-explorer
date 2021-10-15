@@ -4,11 +4,13 @@ import { FileEvent } from "../../shared/types/FileEvent";
 import { TreeNode } from "../types/TreeNode";
 import type { FileInfo } from '../types/FileInfo';
 
-const ExplorerContext = createContext({ getChildren: (path: string[]): null | FileInfo[] => null, open: (path: string[]) => { }, close: (path: string[]) => { } });
+const ExplorerContext = createContext({ getChildren: (path: string[]): null | FileInfo[] => null, open: (path: string[]) => { }, close: (path: string[]) => { }, roots: new Array<string>() });
 const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [tree, setTree] = useState<TreeNode>({});
     const [opened, setOpened] = useState(new Set());
+    const [roots, setRoots] = useState<string[]>([]);
+
     useEffect(() => {
         const ws = new WebSocket('ws://' + location.host);
         ws.onopen = () => setWs(ws);
@@ -16,7 +18,7 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
         return () => ws.close();
     }, []);
 
-    if (!ws || ws.readyState !== WebSocket.OPEN) return <h2>Establishing connection...</h2>;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return <h2>No Connection</h2>;
     ws.onmessage = (message) => {
         const { eventType, filename, pathname } = JSON.parse(message.data) as FileEvent;
         const path = [...pathname.split("/").filter(p => p), filename];
@@ -36,10 +38,14 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
             case "file":
                 pointer[path.shift()] = "FILE";
                 break;
+            case "root":
+                setRoots([...roots, pathname]);
+                break;
             case "folder":
                 pointer[path.shift()] = {};
                 break;
             case "unlink":
+                close(path);
                 delete pointer[path.shift()];
                 break;
             // Folder is empty, nothing to do
@@ -95,7 +101,7 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }));
     };
 
-    return (<ExplorerContext.Provider value={{ getChildren, open, close }}>
+    return (<ExplorerContext.Provider value={{ getChildren, open, close, roots }}>
         {children}
     </ExplorerContext.Provider>);
 };
