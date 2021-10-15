@@ -37,7 +37,7 @@ The NodeJS server has a FileWatcher that manages File System watchers. It is use
 
 The front-end is built with plain React and is compiled by webpack for static serving.
 
-State between the two is synchronized by sending messages over WebSockets using WebSockets [`ws on the server`](https://github.com/websockets/ws) and [native WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) on the client.
+State between the two is synchronized by sending messages over WebSockets using WebSockets [`ws`](https://github.com/websockets/ws) on the server and [native WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) on the client.
 
 ## Communication Protocol
 
