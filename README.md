@@ -78,3 +78,7 @@ FolderEvent {
   pathname: string;
 }
 ```
+
+## Security
+
+Being what it is, the project doesn't require a whole lot of security. However, file names alone can still expose sensitive details. To protect against this, the server will ignore any requests made in regards to folders which are not under any roots.

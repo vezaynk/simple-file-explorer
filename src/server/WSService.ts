@@ -14,6 +14,10 @@ export function registerWebSocketServer(server: http.Server, roots: string[]) {
 
   const fileWatcher = new FileWatcher();
 
+  function isUnderRoot(pathname: string): boolean {
+    return roots.some((r) => path.resolve(pathname).startsWith(r));
+  }
+
   wss.on("connection", (ws) => {
     const subscriptions = new Map<string, () => void>();
 
@@ -38,7 +42,11 @@ export function registerWebSocketServer(server: http.Server, roots: string[]) {
       const { type, pathname } = JSON.parse(message) as FolderOperation;
       switch (type) {
         case "open":
+          // Can only open folders
           if ((await getFileType(pathname)) != "folder") return;
+          // Can only open folders that are under an expose root
+          if (!isUnderRoot(pathname)) return;
+
           if (!subscriptions.get(pathname)) {
             subscriptions.set(
               pathname,
