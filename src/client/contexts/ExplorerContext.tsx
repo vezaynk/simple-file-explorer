@@ -5,20 +5,36 @@ import { TreeNode } from "../types/TreeNode";
 import type { FileInfo } from '../types/FileInfo';
 
 const ExplorerContext = createContext({ getChildren: (path: string[]): null | FileInfo[] => null, open: (path: string[]) => { }, close: (path: string[]) => { }, roots: new Array<string>() });
+
 const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
-    const [ws, setWs] = useState<WebSocket | null>(null);
     const [tree, setTree] = useState<TreeNode>({});
     const [opened, setOpened] = useState(new Map<string, number>());
     const [roots, setRoots] = useState<string[]>([]);
+    const [status, setStatus] = useState(-1);
+    const wsRef = useRef<WebSocket>(null);
+    const ws = wsRef.current;
+
+    function connect() {
+        if (!ws || ws.readyState == WebSocket.CLOSED) {
+            wsRef.current = new WebSocket(location.protocol.replace("http", "ws") + '//' + location.host);
+            setStatus(WebSocket.CONNECTING);
+            wsRef.current.onclose = () => setStatus(WebSocket.CLOSED);
+            wsRef.current.onopen = () => setStatus(WebSocket.OPEN);
+        }
+    }
 
     useEffect(() => {
-        const ws = new WebSocket(location.protocol.replace("http", "ws") + '//' + location.host);
-        ws.onopen = () => setWs(ws);
-        ws.onclose = () => setWs(null);
+        connect();
         return () => ws.close();
     }, []);
 
-    if (!ws || ws.readyState !== WebSocket.OPEN) return <h2>No Connection</h2>;
+    switch (status) {
+        case WebSocket.CLOSED: return <h2 onClick={connect}>Connection Closed. Click to Reconnect.</h2>;
+        case WebSocket.CONNECTING: return <h2>Connecting...</h2>;
+        case WebSocket.OPEN: break;
+        default: return <h2>Not Connected Yet</h2>;
+    }
+
     function handleFileEvent(fileEvent: FileEvent) {
         const { eventType, filename, pathname } = fileEvent;
         const path = [...pathname.split("/").filter(p => p), filename];
