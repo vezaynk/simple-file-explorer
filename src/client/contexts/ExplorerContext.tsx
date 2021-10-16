@@ -18,7 +18,13 @@ const ExplorerProvider = ({ children }: React.PropsWithChildren<{}>) => {
         if (!ws || ws.readyState == WebSocket.CLOSED) {
             wsRef.current = new WebSocket(location.protocol.replace("http", "ws") + '//' + location.host);
             setStatus(WebSocket.CONNECTING);
-            wsRef.current.onclose = () => setStatus(WebSocket.CLOSED);
+            wsRef.current.onclose = () => {
+                // clear state
+                setTree({});
+                setRoots([]);
+                setOpened(new Map());
+                setStatus(WebSocket.CLOSED);
+            };
             wsRef.current.onopen = () => setStatus(WebSocket.OPEN);
         }
     }
