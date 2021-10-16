@@ -1,8 +1,9 @@
 # Simple File Explorer
 
-This is a basic file explorer built with NodeJS and React.
+This is a basic file explorer built with NodeJS and React featuring an efficient real-time file watcher.
 
 ![Demo GIF](demo.gif)
+![Face lift](screenshot.png)
 
 # Running
 

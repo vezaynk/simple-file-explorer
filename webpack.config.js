@@ -1,12 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = [{
     entry: {
         client: "./src/client/index.tsx",
     },
     target: "web",
-    mode: "development",
     output: {
         path: path.resolve(__dirname, "build", "public"),
         filename: "[name].bundle.js",
@@ -27,7 +27,7 @@ module.exports = [{
             },
             {
                 test: /\.css$/,
-                loader: "css-loader",
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
             },
         ],
     },
@@ -35,6 +35,7 @@ module.exports = [{
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "client", "index.html"),
             filename: "./index.html"
-        })
+        }),
+        new MiniCssExtractPlugin()
     ],
 }];
